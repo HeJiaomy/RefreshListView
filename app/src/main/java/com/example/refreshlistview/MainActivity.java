@@ -49,6 +49,30 @@ public class MainActivity extends AppCompatActivity {
                     }
                 }).start();
             }
+
+            @Override
+            public void onLoadMore() {
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        try {
+                            Thread.sleep(2000);
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
+                        dataLists.add("这是加载更多出来的数据1");
+                        dataLists.add("这是加载更多出来的数据2");
+                        dataLists.add("这是加载更多出来的数据3");
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                adapter.notifyDataSetChanged();
+                                listView.onRefreshComplete();
+                            }
+                        });
+                    }
+                }).start();
+            }
         });
         dataLists = new ArrayList<>();
         for (int i = 0; i < 30; i++) {
