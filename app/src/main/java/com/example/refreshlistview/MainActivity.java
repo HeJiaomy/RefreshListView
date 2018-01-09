@@ -18,6 +18,7 @@ public class MainActivity extends AppCompatActivity {
 
     private RefreshListView listView;
     List<String> dataLists;
+    MyAdapter adapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -25,11 +26,36 @@ public class MainActivity extends AppCompatActivity {
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.activity_main);
         listView = findViewById(R.id.listview);
+        listView.setRefreshListener(new RefreshListView.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        try {
+                            Thread.sleep(2000);
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
+                        dataLists.add(0,"这是下拉刷新的数据！");
+
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                adapter.notifyDataSetChanged();
+                                listView.onRefreshComplete();
+                            }
+                        });
+                    }
+                }).start();
+            }
+        });
         dataLists = new ArrayList<>();
         for (int i = 0; i < 30; i++) {
             dataLists.add("这是一条ListView的数据：" + i);
         }
-        listView.setAdapter(new MyAdapter());
+        adapter= new MyAdapter();
+        listView.setAdapter(adapter);
     }
 
     class MyAdapter extends BaseAdapter {
